@@ -8,6 +8,23 @@ const isImageUrl = (val: any) => {
 };
 
 const formatKey = (key: string) => {
+  // Custom specific replacements
+  const customNames: Record<string, string> = {
+    "nik_mom": "NIK Ibu",
+    "nik mom": "NIK Ibu",
+    "nik_dad": "NIK Ayah",
+    "nik dad": "NIK Ayah",
+    "nama_mom": "Nama Ibu",
+    "nama mom": "Nama Ibu",
+    "nama_dad": "Nama Ayah",
+    "nama dad": "Nama Ayah",
+  };
+
+  const lowerKey = key.toLowerCase();
+  if (customNames[lowerKey]) {
+    return customNames[lowerKey];
+  }
+
   // Convert camelCase or snake_case to Title Case
   return key
     .replace(/_/g, ' ')
