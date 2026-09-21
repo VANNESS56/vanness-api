@@ -8,6 +8,8 @@ const PAKASIR_API_KEY = process.env.PAKASIR_API_KEY;
 const PAKASIR_PROJECT = "vanness-store"; // from PROJECT.md
 const PRICE_PER_TOKEN = 2500;
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);

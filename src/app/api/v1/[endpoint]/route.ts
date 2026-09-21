@@ -13,6 +13,8 @@ const services = [
   { id: "fr", name: "Face Recognition", cost: 5, url: "https://api.betabotz.eu.org/api/search/fr?url=", param: "url" },
 ];
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ endpoint: string }> }

@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 import { checkRateLimit, AUTH_RATE_LIMIT } from "@/lib/rate-limit";
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   try {
     // Rate Limiting per IP

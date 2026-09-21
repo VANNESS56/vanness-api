@@ -15,6 +15,8 @@ const WEBHOOK_SECRET = process.env.PAKASIR_API_KEY || "";
  * 4. Validasi amount cocok dengan data transaksi di database
  * 5. Cegah double-spending (transaksi sudah COMPLETED diabaikan)
  */
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   try {
     // ===== LAYER 1: Rate Limiting =====

@@ -11,6 +11,8 @@ const API_COSTS: Record<string, number> = {
   fr: 5,
 };
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
