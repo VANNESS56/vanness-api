@@ -9,6 +9,7 @@ const inter = Inter({
 
 import AuthProvider from "@/components/AuthProvider";
 import DevToolsBlocker from "@/components/DevToolsBlocker";
+import NextTopLoader from "nextjs-toploader";
 
 export const metadata: Metadata = {
   title: "Panness API Dashboard",
@@ -23,6 +24,7 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body className={`${inter.variable} antialiased`}>
+        <NextTopLoader color="#4f46e5" showSpinner={false} />
         <AuthProvider>
           <DevToolsBlocker />
           {children}
