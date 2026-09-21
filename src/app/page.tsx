@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Orbitron } from "next/font/google";
 import { Code2, Headset, Zap, Layers, Shield, Wallet, KeyRound } from "lucide-react";
 
@@ -10,9 +11,9 @@ export default function HomePage() {
       {/* Navbar */}
       <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200">
         <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
-          <span className={`${orbitron.className} text-xl font-bold tracking-wider text-gray-900`}>
-            PannessAPI
-          </span>
+          <Link href="/">
+            <Image src="/logo.png" alt="Panness API Logo" width={150} height={50} className="h-10 w-auto object-contain" priority />
+          </Link>
           <div className="flex gap-3">
             <Link
               href="/login"
@@ -32,9 +33,9 @@ export default function HomePage() {
 
       {/* Hero */}
       <section className="max-w-5xl mx-auto px-6 pt-20 pb-16 text-center">
-        <h1 className={`${orbitron.className} text-5xl md:text-6xl font-black tracking-wide mb-5 text-gray-900`}>
-          PannessAPI
-        </h1>
+        <div className="flex justify-center mb-6">
+          <Image src="/logo.png" alt="Panness API Logo Utama" width={300} height={120} className="h-24 md:h-32 w-auto object-contain drop-shadow-sm hover:scale-105 transition-transform duration-300" priority />
+        </div>
         <p className="text-gray-500 text-lg max-w-xl mx-auto mb-10 leading-relaxed">
           Koleksi endpoint siap pakai untuk proyek bot, aplikasi, dan kebutuhanmu.
           Stabil, cepat, dan mudah diintegrasikan.

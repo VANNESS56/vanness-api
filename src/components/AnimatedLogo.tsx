@@ -1,30 +1,24 @@
 "use client";
 
-import { Orbitron } from "next/font/google";
-import { TypeAnimation } from "react-type-animation";
+import Image from "next/image";
 import Link from "next/link";
-
-const orbitron = Orbitron({ subsets: ["latin"], weight: ["400", "700", "900"] });
 
 interface AnimatedLogoProps {
   href?: string;
   className?: string;
-  text?: string;
+  text?: string; // Kept for backwards compatibility but not used
 }
 
 export default function AnimatedLogo({ href = "/dashboard", className = "", text = "PannessAPI" }: AnimatedLogoProps) {
   const content = (
-    <div className={`${orbitron.className} tracking-widest ${className}`}>
-      <TypeAnimation
-        sequence={[
-          text,
-          3000, 
-          '', 
-          500,
-        ]}
-        wrapper="span"
-        cursor={true}
-        repeat={Infinity}
+    <div className={`relative flex items-center hover:scale-105 transition-transform duration-300 ${className}`}>
+      <Image
+        src="/logo.png"
+        alt="Panness API Logo"
+        width={200}
+        height={80}
+        className="object-contain w-auto h-12 md:h-14"
+        priority
       />
     </div>
   );
