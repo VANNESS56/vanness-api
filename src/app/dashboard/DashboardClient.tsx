@@ -4,7 +4,7 @@ import { signOut } from "next-auth/react";
 import { useState } from "react";
 import useSWR from "swr";
 import Link from "next/link";
-import { Menu, LayoutGrid, Clock, Users } from "lucide-react";
+import { Menu, LayoutGrid, Clock, Users, Loader2 } from "lucide-react";
 import AnimatedLogo from "@/components/AnimatedLogo";
 import ResultViewer from "@/components/ResultViewer";
 import Swal from "sweetalert2";
@@ -331,7 +331,7 @@ export default function DashboardClient({ username, initialTokenBalance, metrics
                   disabled={loading}
                   className="btn-primary px-6 py-2.5 rounded-xl font-semibold disabled:opacity-50"
                 >
-                  {loading ? "Mencari..." : "Cari"}
+                  {loading ? <Loader2 className="animate-spin mx-auto" size={20} /> : "Cari"}
                 </button>
               </form>
 
