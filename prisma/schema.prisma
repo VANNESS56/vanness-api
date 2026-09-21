@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  username      String    @unique
+  email         String    @unique
+  phoneNumber   String    @unique
+  passwordHash  String
+  apiKey        String?   @unique
+  tokenBalance  Int       @default(0)
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  transactions  Transaction[]
+  searchHistory SearchHistory[]
+  tickets       Ticket[]
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Transaction {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  orderId       String    @unique // From Pakasir (e.g. INV123123)
+  amount        Int
+  tokenAmount   Int
+  status        TransactionStatus @default(PENDING)
+  paymentMethod String?
+  createdAt     DateTime  @default(now())
+  completedAt   DateTime?
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  CANCELED
+}
+
+model Voucher {
+  id            String    @id @default(cuid())
+  code          String    @unique
+  tokenAmount   Int
+  isUsed        Boolean   @default(false)
+  usedById      String?
+  usedAt        DateTime?
+  createdAt     DateTime  @default(now())
+}
+
+model SearchHistory {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  endpointUsed  String
+  query         String
+  result        String?   @db.Text
+  costTokens    Int
+  createdAt     DateTime  @default(now())
+}
+
+model Ticket {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  subject       String
+  status        TicketStatus @default(OPEN)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  messages      TicketMessage[]
+}
+
+enum TicketStatus {
+  OPEN
+  CLOSED
+}
+
+model TicketMessage {
+  id            String    @id @default(cuid())
+  ticketId      String
+  ticket        Ticket    @relation(fields: [ticketId], references: [id])
+  senderRole    Role      // Menyimpan apakah pesan dari USER atau ADMIN
+  message       String    @db.Text
+  createdAt     DateTime  @default(now())
+}
