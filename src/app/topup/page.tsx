@@ -4,7 +4,9 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import Link from "next/link";
-import { ChevronLeft, Send } from "lucide-react";
+import { Send, Wallet } from "lucide-react";
+import ParticleNetwork from "@/components/ParticleNetwork";
+import Sidebar from "@/components/Sidebar";
 
 export default function TopupPage() {
   const router = useRouter();
@@ -91,7 +93,6 @@ export default function TopupPage() {
       if (res.ok) {
         setVoucherMsg({ type: "success", text: data.message });
         setVoucherCode("");
-        // Reload page to update balance in navbar/dashboard if needed, or just show success
         setTimeout(() => {
           router.push("/dashboard");
           router.refresh();
@@ -107,170 +108,147 @@ export default function TopupPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-[#f4f6f9]">
-      <div className="w-full max-w-lg">
-        <div className="mb-6 flex justify-between items-center">
-          <Link href="/dashboard" className="text-gray-500 hover:text-gray-900 text-sm font-medium flex items-center">
-            <ChevronLeft size={16} className="mr-1" />
-            Kembali ke Dashboard
-          </Link>
-          <div className="flex gap-4">
-            <Link href="/history" className="text-gray-500 hover:text-gray-900 text-sm font-medium flex items-center">
-              <span className="hidden sm:inline">History</span>
-              <span className="sm:hidden">Hist</span>
-            </Link>
-            <Link href="/support" className="text-gray-500 hover:text-gray-900 text-sm font-medium flex items-center">
-              <span className="hidden sm:inline">Support</span>
-              <span className="sm:hidden">Bantuan</span>
-            </Link>
+    <div className="min-h-screen pb-24 text-gray-200 font-sans">
+
+      <div className="max-w-4xl mx-auto p-4 sm:p-6 relative z-10 animate-fade-in-up">
+        
+        {/* Navbar */}
+        <nav className="flex items-center gap-4 py-4 mb-4">
+          <div className="relative">
+            <Sidebar />
+          </div>
+          <div className="font-extrabold text-2xl tracking-wide text-white">
+            Panness API
+          </div>
+        </nav>
+
+        {/* Header */}
+        <div className="flex items-center gap-4 mb-8">
+          <div className="w-12 h-12 bg-[#1A1C23] rounded-xl flex items-center justify-center border border-[#262831]">
+            <Wallet size={22} className="text-emerald-500" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-white tracking-wide">Deposit & Topup</h1>
+            <p className="text-xs text-gray-500 font-mono tracking-wider mt-1">Isi saldo token untuk akses API</p>
           </div>
         </div>
 
-        {!qrisData ? (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-            {/* Header Form */}
-            <div className="bg-[#f8f9fa] border-b border-gray-200 px-6 py-4 flex items-center text-gray-700">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-              </svg>
-              <span className="font-semibold text-[15px]">Form Deposit</span>
-            </div>
-
-            {/* Body Form */}
-            <form onSubmit={handleTopup} className="p-6 space-y-5">
-              {error && (
-                <div className="bg-red-50 text-red-600 p-3 rounded text-sm">
-                  {error}
+        <div className="w-full max-w-lg mx-auto">
+          {!qrisData ? (
+            <div className="bg-[#111215]/80 backdrop-blur-xl rounded-[1.5rem] shadow-2xl border border-[#1F2128] overflow-hidden mb-6">
+              <div className="bg-[#17181D]/70 border-b border-[#1F2128] px-6 py-4 flex items-center text-white">
+                <span className="font-semibold text-[15px] tracking-wide">Form Deposit (QRIS)</span>
+              </div>
+              <form onSubmit={handleTopup} className="p-6 space-y-5">
+                {error && (
+                  <div className="bg-red-500/10 text-red-500 border border-red-500/20 p-3 rounded-xl text-sm">
+                    {error}
+                  </div>
+                )}
+                <div>
+                  <label className="block text-[14px] text-gray-400 font-mono tracking-wider mb-2">Jumlah Token</label>
+                  <input 
+                    type="number" 
+                    required
+                    min="5"
+                    step="1"
+                    value={tokenAmount}
+                    onChange={(e) => setTokenAmount(e.target.value ? Number(e.target.value) : "")}
+                    placeholder="Minimal 5 Token"
+                    className="w-full bg-[#08090C] border border-[#1F2128] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 placeholder-gray-600 transition-colors"
+                  />
                 </div>
-              )}
-
-              {/* Jenis Pembayaran */}
-              <div>
-                <label className="block text-[14px] text-gray-600 mb-1.5">Jenis Pembayaran</label>
-                <select className="w-full border border-gray-300 rounded px-3 py-2 text-[14px] text-gray-700 focus:outline-none focus:border-blue-500 bg-white">
-                  <option>QRIS</option>
-                </select>
-              </div>
-
-              {/* Jumlah Token */}
-              <div>
-                <label className="block text-[14px] text-gray-600 mb-1.5">Jumlah Token</label>
-                <input 
-                  type="number" 
-                  required
-                  min="5"
-                  step="1"
-                  value={tokenAmount}
-                  onChange={(e) => setTokenAmount(e.target.value ? Number(e.target.value) : "")}
-                  placeholder="5"
-                  className="w-full border border-gray-300 rounded px-3 py-2 text-[14px] text-gray-700 focus:outline-none focus:border-blue-500 placeholder-gray-400"
-                />
-                <p className="text-[#f05050] text-[12px] mt-1">Minimal: 5 Token</p>
-              </div>
-
-              {/* Total Harga (Rupiah) */}
-              <div>
-                <label className="block text-[14px] text-gray-600 mb-1.5">Total Pembayaran</label>
-                <input 
-                  type="text" 
-                  readOnly
-                  value={totalPrice > 0 ? `Rp ${totalPrice.toLocaleString("id-ID")}` : ""}
-                  className="w-full border border-gray-300 rounded px-3 py-2 text-[14px] text-gray-700 bg-gray-50 focus:outline-none cursor-not-allowed font-semibold text-blue-600"
-                />
-              </div>
-
-              {/* Button Submit */}
-              <div className="pt-2 text-center">
-                <button
-                  type="submit"
-                  disabled={loading || !tokenAmount || Number(tokenAmount) < 5}
-                  className="inline-flex items-center justify-center bg-[#5d5feF] hover:bg-[#4d4fdF] text-white px-6 py-2 rounded text-[14px] font-medium transition-colors disabled:opacity-50 min-w-[200px]"
-                >
-                  {loading ? (
-                    "Memproses..."
-                  ) : (
-                    <>
-                      <Send size={16} className="mr-2" />
-                      Buat Permintaan
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        ) : (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center space-y-6">
-            <h2 className="text-xl font-bold text-gray-800">
-              {paymentSuccess ? "Pembayaran Berhasil! 🎉" : "Scan QRIS"}
-            </h2>
-            <div className="bg-white border p-4 rounded-xl inline-block shadow-sm relative">
-              {paymentSuccess && (
-                <div className="absolute inset-0 bg-white/80 flex flex-col justify-center items-center rounded-xl z-10 backdrop-blur-sm">
-                  <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-white text-3xl mb-2 shadow-lg">✓</div>
-                  <div className="font-bold text-green-600">Lunas</div>
-                </div>
-              )}
-              <img 
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qrisData.qr_string)}`}
-                alt="QRIS Code"
-                width={250}
-                height={250}
-                className={`mx-auto ${paymentSuccess ? 'opacity-30' : ''}`}
-              />
-            </div>
-            
-            <div>
-              <div className="text-gray-500 text-sm">Order ID: {qrisData.order_id}</div>
-              <div className="text-2xl font-bold mt-2 text-[#5d5feF]">
-                Rp {qrisData.amount.toLocaleString("id-ID")}
-              </div>
-              <p className="text-sm text-gray-600 mt-2">
-                {paymentSuccess 
-                  ? "Saldo token Anda telah ditambahkan. Mengalihkan ke Dashboard..." 
-                  : "Silakan scan kode QRIS di atas menggunakan aplikasi m-banking atau e-wallet Anda. Saldo akan bertambah otomatis setelah pembayaran berhasil (Realtime)."}
-              </p>
-            </div>
-
-            <Link href="/dashboard" className="inline-block mt-4 px-6 py-2 border border-gray-300 rounded text-sm text-gray-700 font-medium hover:bg-gray-50 transition-colors">
-              Tutup dan Cek Saldo
-            </Link>
-          </div>
-        )}
-
-        {/* Form Redeem Voucher */}
-        {!qrisData && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-            <div className="bg-[#f8f9fa] border-b border-gray-200 px-6 py-4 flex items-center text-gray-700">
-              <span className="font-semibold text-[15px]">Redeem Voucher</span>
-            </div>
-            <form onSubmit={handleRedeemVoucher} className="p-6 space-y-4">
-              {voucherMsg.text && (
-                <div className={`p-3 rounded text-sm ${voucherMsg.type === 'error' ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-700'}`}>
-                  {voucherMsg.text}
-                </div>
-              )}
-              <div>
-                <label className="block text-[14px] text-gray-600 mb-1.5">Kode Voucher</label>
-                <div className="flex gap-2">
+                <div>
+                  <label className="block text-[14px] text-gray-400 font-mono tracking-wider mb-2">Total Pembayaran</label>
                   <input 
                     type="text" 
-                    value={voucherCode}
-                    onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
-                    placeholder="Masukkan kode voucher..."
-                    className="w-full border border-gray-300 rounded px-3 py-2 text-[14px] text-gray-700 focus:outline-none focus:border-blue-500 font-mono uppercase"
+                    readOnly
+                    value={totalPrice > 0 ? `Rp ${totalPrice.toLocaleString("id-ID")}` : ""}
+                    className="w-full bg-[#1A1C23] border border-[#262831] rounded-xl px-4 py-3 text-emerald-500 font-bold focus:outline-none cursor-not-allowed"
                   />
+                </div>
+                <div className="pt-2">
                   <button
                     type="submit"
-                    disabled={voucherLoading || !voucherCode}
-                    className="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded text-[14px] font-medium transition-colors disabled:opacity-50 whitespace-nowrap"
+                    disabled={loading || !tokenAmount || Number(tokenAmount) < 5}
+                    className="w-full flex items-center justify-center bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border border-emerald-500/20 px-6 py-3 rounded-xl text-[15px] font-bold transition-colors disabled:opacity-50"
                   >
-                    {voucherLoading ? "Cek..." : "Redeem"}
+                    {loading ? "Memproses..." : <><Send size={18} className="mr-2" /> Buat Permintaan</>}
                   </button>
                 </div>
+              </form>
+            </div>
+          ) : (
+            <div className="bg-[#111215]/80 backdrop-blur-xl rounded-[1.5rem] shadow-2xl border border-[#1F2128] p-8 text-center space-y-6">
+              <h2 className="text-xl font-bold text-white tracking-wide">
+                {paymentSuccess ? "Pembayaran Berhasil! 🎉" : "Scan QRIS"}
+              </h2>
+              <div className="bg-white p-4 rounded-2xl inline-block shadow-lg relative">
+                {paymentSuccess && (
+                  <div className="absolute inset-0 bg-white/90 flex flex-col justify-center items-center rounded-2xl z-10 backdrop-blur-sm">
+                    <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-white text-3xl mb-2 shadow-lg">✓</div>
+                    <div className="font-bold text-emerald-600 tracking-wide">Lunas</div>
+                  </div>
+                )}
+                <img 
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qrisData.qr_string)}`}
+                  alt="QRIS Code"
+                  width={250}
+                  height={250}
+                  className={`mx-auto rounded-lg ${paymentSuccess ? 'opacity-30' : ''}`}
+                />
               </div>
-            </form>
-          </div>
-        )}
+              <div>
+                <div className="text-gray-500 text-sm font-mono">Order ID: {qrisData.order_id}</div>
+                <div className="text-3xl font-bold mt-2 text-emerald-500 font-mono">
+                  Rp {qrisData.amount.toLocaleString("id-ID")}
+                </div>
+                <p className="text-sm text-gray-400 mt-4 leading-relaxed">
+                  {paymentSuccess 
+                    ? "Saldo token Anda telah ditambahkan. Mengalihkan ke Dashboard..." 
+                    : "Silakan scan kode QRIS menggunakan aplikasi m-banking atau e-wallet. Saldo bertambah otomatis secara realtime."}
+                </p>
+              </div>
+              <button onClick={() => router.push("/dashboard")} className="inline-block mt-4 px-6 py-3 border border-[#262831] rounded-xl text-sm text-gray-400 font-semibold hover:bg-[#1A1C23] hover:text-white transition-colors w-full">
+                Kembali ke Dashboard
+              </button>
+            </div>
+          )}
+
+          {/* Form Redeem Voucher */}
+          {!qrisData && (
+            <div className="bg-[#111215]/80 backdrop-blur-xl rounded-[1.5rem] shadow-2xl border border-[#1F2128] overflow-hidden">
+              <div className="bg-[#17181D]/70 border-b border-[#1F2128] px-6 py-4 flex items-center text-white">
+                <span className="font-semibold text-[15px] tracking-wide">Redeem Voucher</span>
+              </div>
+              <form onSubmit={handleRedeemVoucher} className="p-6 space-y-4">
+                {voucherMsg.text && (
+                  <div className={`p-3 rounded-xl border text-sm ${voucherMsg.type === 'error' ? 'bg-red-500/10 text-red-500 border-red-500/20' : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'}`}>
+                    {voucherMsg.text}
+                  </div>
+                )}
+                <div>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      value={voucherCode}
+                      onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
+                      placeholder="XXXX-XXXX-XXXX"
+                      className="w-full bg-[#08090C] border border-[#1F2128] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 font-mono uppercase tracking-widest"
+                    />
+                    <button
+                      type="submit"
+                      disabled={voucherLoading || !voucherCode}
+                      className="bg-[#1A1C23] hover:bg-[#262831] border border-[#262831] text-white px-6 py-3 rounded-xl font-bold transition-colors disabled:opacity-50"
+                    >
+                      {voucherLoading ? "Cek..." : "Redeem"}
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

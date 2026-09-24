@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Orbitron } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+const orbitron = Orbitron({
+  variable: "--font-orbitron",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
 });
 
 import AuthProvider from "@/components/AuthProvider";
 import DevToolsBlocker from "@/components/DevToolsBlocker";
 import NextTopLoader from "nextjs-toploader";
+import ParticleNetwork from "@/components/ParticleNetwork";
 
 export const metadata: Metadata = {
   title: "Panness API Dashboard",
@@ -23,7 +25,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id">
-      <body className={`${inter.variable} antialiased`}>
+      <body className={`${orbitron.variable} ${orbitron.className} antialiased`}>
+        <ParticleNetwork />
         <NextTopLoader color="#4f46e5" showSpinner={false} />
         <AuthProvider>
           <DevToolsBlocker />

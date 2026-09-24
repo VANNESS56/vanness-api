@@ -12,6 +12,7 @@ export default function AdminSidebar() {
     { href: "/ekhem", label: "Dashboard", icon: <LayoutDashboard size={20} /> },
     { href: "/ekhem/users", label: "Manage User", icon: <Users size={20} /> },
     { href: "/ekhem/history", label: "Riwayat API", icon: <History size={20} /> },
+    { href: "/ekhem/wa-settings", label: "WA Panel Settings", icon: <MessageSquareText size={20} /> },
     { href: "/ekhem/tickets", label: "Support Tickets", icon: <MessageSquareText size={20} /> },
     { href: "/ekhem/vouchers", label: "Generate Voucher", icon: <Ticket size={20} /> },
     { href: "/ekhem/laporan", label: "Laporan", icon: <FileText size={20} /> },

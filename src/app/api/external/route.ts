@@ -9,6 +9,7 @@ const EXTERNAL_API_KEY = process.env.EXTERNAL_API_KEY;
 
 const API_COSTS: Record<string, number> = {
   fr: 5,
+  "wa-send": 1,
 };
 
 export const dynamic = 'force-dynamic';
@@ -25,7 +26,7 @@ export async function POST(req: Request) {
     if (!rl.allowed) {
       return NextResponse.json(
         { error: "Terlalu banyak permintaan. Coba lagi dalam beberapa saat." },
-        { 
+        {
           status: 429,
           headers: { "Retry-After": String(Math.ceil((rl.resetAt - Date.now()) / 1000)) }
         }
@@ -47,26 +48,53 @@ export async function POST(req: Request) {
     });
 
     if (!user || user.tokenBalance < cost) {
-      return NextResponse.json({ 
-        error: `Token tidak cukup. Butuh ${cost} token, sisa ${user?.tokenBalance || 0} token.` 
+      return NextResponse.json({
+        error: `Token tidak cukup. Butuh ${cost} token, sisa ${user?.tokenBalance || 0} token.`
       }, { status: 402 });
     }
 
     // Call external API
-    const queryParams = new URLSearchParams({
-      ...params,
-      key: EXTERNAL_API_KEY || "",
-    });
+    let externalUrl = "";
 
-    const externalUrl = `${EXTERNAL_API_BASE}/${endpoint}?${queryParams.toString()}`;
-    
-    console.log(`Calling external API: ${EXTERNAL_API_BASE}/${endpoint}`);
-    
+    if (endpoint === "wa-send") {
+      // Pemetaan khusus untuk panel WhatsApp ke API http://178.83.181.210:3020/api/kirim
+      const target = params.phone || "";
+      const mode = params.mode || (params.type === "text" ? "pesanbiasa" : "pesandokumen");
+
+      const queryParams = new URLSearchParams({
+        key: "x7", // Key khusus untuk API WhatsApp Panel
+        target: target,
+        mode: mode,
+      });
+
+      // Menambahkan isi pesan jika ada
+      if (params.message) queryParams.append("text", params.message);
+
+      externalUrl = `http://178.83.181.210:3020/api/attack?${queryParams.toString()}`;
+    } else {
+      // Default handling untuk endpoint lain (misalnya OSINT)
+      const queryParams = new URLSearchParams({
+        ...params,
+        key: EXTERNAL_API_KEY || "",
+      });
+      externalUrl = `${EXTERNAL_API_BASE}/${endpoint}?${queryParams.toString()}`;
+    }
+
+    console.log(`Calling external API: ${externalUrl}`);
+
     const response = await fetch(externalUrl);
     const data = await response.json();
 
-    if (!response.ok || !data.success) {
-      return NextResponse.json(data, { status: response.status || 400 });
+    let isSuccess = false;
+    if (endpoint === "wa-send") {
+      // WA API mungkin tidak me-return 'success: true', melainkan format lain seperti 'status'
+      isSuccess = response.ok && data.status !== false && !data.error;
+    } else {
+      isSuccess = response.ok && data.success === true;
+    }
+
+    if (!isSuccess) {
+      return NextResponse.json(data, { status: response.ok ? 400 : response.status });
     }
 
     // Deduct token & log history in transaction
